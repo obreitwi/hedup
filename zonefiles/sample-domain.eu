@@ -1,0 +1,17 @@
+$TTL 86400
+@   IN SOA ns1.first-ns.de. postmaster.robot.first-ns.de. (
+    2018090901   ; serial
+    86400        ; refresh
+    10800        ; retry
+    3600000      ; expire
+    86400 )      ; minimum
+ 
+@                        IN NS      robotns3.second-ns.com.
+@                        IN NS      robotns2.second-ns.de.
+@                        IN NS      ns1.first-ns.de.
+ 
+@                        IN A       <INSERT IP>
+mail                     IN A       <INSERT IP>
+www                      IN A       <INSERT IP>
+@                        IN MX 10   mail
+@                        IN TXT     "v=spf1 mx a -all"
