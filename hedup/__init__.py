@@ -26,18 +26,43 @@
     * ${HOME}/.config/hedup/zonefiles
     * /etc/hedup/zonefiles
     * ${SCRIPT}/hedup/zonefiles
+
+    If no arguments are specified -e.g., when run as , hedup will try to aquire
+    the relevant information from the environment. This is especially useful
+    when run as manual-auth-hook in certbot.
 """
 
 from __future__ import print_function
+
+from pkg_resources import resource_string
 
 import argparse
 import os
 import os.path as osp
 import subprocess as sp
 import tempfile
+import time
 import yaml
 
+
 ROBOT_ADDRESS = "robot@robot.first-ns.de"
+
+
+class EnsureInEnv(object):
+    """
+        Ensure a given environment variable is present and retrieve its value
+        for the entered context.
+    """
+    def __init__(self, name):
+        if name not in os.environ:
+            raise IOError("{} not defined in environment!".format(name))
+        self.name = name
+
+    def __enter__(self):
+        return os.environ[self.name]
+
+    def __exit__(self, *args):
+        pass
 
 
 class Which(object):
@@ -110,7 +135,13 @@ def main():
     elif config["domain"] is not None:
         update_dns(config)
     else:
-        print("Must specify either --domain or --list-domains.")
+        # auto-mode for manual-auth-hook call from certbot
+        retrieve_certbot_config(config)
+        update_dns(config)
+        print("Sleeping post update for {}s…".format(
+              config["post_update_wait_secs"]))
+        time.sleep(config["post_update_wait_secs"])
+        print("…done!")
 
 
 def parse_arguments():
@@ -153,7 +184,7 @@ def read_config(args):
             osp.expandvars("${HOME}/.config/hedup/heduprc"),
         ]
 
-    config = {}
+    config = yaml.load(resource_string(__name__, "heduprc.defaults"))
 
     for filename_config in config_file_order:
         try:
@@ -172,6 +203,20 @@ def read_config(args):
     return config
 
 
+def retrieve_certbot_config(config):
+    """
+        Retrieve domain and acme information from environment.
+    """
+    with EnsureInEnv("CERTBOT_DOMAIN") as value:
+        # ensure domain does not start with wildcard
+        if value.startswith("*."):
+            value = value[2:]
+        config["domain"] = value
+
+    with EnsureInEnv("CERTBOT_VALIDATION") as value:
+        config["acme_challenge"] = value
+
+
 def update_dns(config):
     with tempfile.TemporaryFile() as tmp:
         write_preamble(config, tmp)
@@ -183,8 +228,8 @@ def update_dns(config):
 
         tmp.seek(0)
 
-        gpg_prog = Which(config.get("gpg_binary", "gpg"))
-        mail_prog = Which(config.get("mail_binary", "mail"))
+        gpg_prog = Which(config["gpg_binary"])
+        mail_prog = Which(config["mail_binary"])
 
         gpg = gpg_prog("-o", "-", "-u", config["gpg_sign_key"],
                        "--clearsign",
@@ -206,7 +251,8 @@ def update_dns(config):
 
 def write_acme_challenge(config, outfile):
     if config["acme_challenge"] is not None:
-        outfile.write("_acme-challenge 300 IN TXT \"{}\"\n".format(
+        outfile.write("_acme-challenge {} IN TXT \"{}\"\n".format(
+                      config["acme_challenge_ttl"],
                       config["acme_challenge"]).encode())
 
 
