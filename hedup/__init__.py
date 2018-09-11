@@ -54,6 +54,50 @@ def cat_zonefile(config, outfile):
         list(map(outfile.write, map(lambda s: s.encode(), f.readlines())))
 
 
+def escape_spaces(msg):
+    if " " in msg:
+        return "\"{}\"".format(msg)
+    else:
+        return msg
+
+
+def get_folders_zonefiles(config):
+    """
+        Search and return folder for zonefiles. The order is:
+
+        1. $HOME/.config/hedup/zonefiles
+        2. /etc/hedup/zonefiles
+        3. ./zonefiles
+    """
+    search_order = [
+            osp.expandvars("$HOME/.config/hedup/zonefiles"),
+            "/etc/hedup/zonefiles",
+            osp.join(osp.dirname(osp.abspath(__file__)), "zonefiles"),
+        ]
+    return search_order
+
+
+def list_domains(config):
+    for folder in get_folders_zonefiles(config):
+        if not osp.isdir(folder):
+            continue
+        print("")
+        print("Available domains in folder: {}".format(folder))
+        print("")
+        for domain in os.listdir(folder):
+            print(domain)
+
+
+def main():
+    config = read_config(parse_arguments())
+    if config["list_domains"]:
+        list_domains(config)
+    elif config["domain"] is not None:
+        update_dns(config)
+    else:
+        print("Must specify either --domain or --list-domains.")
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser()
 
@@ -113,64 +157,6 @@ def read_config(args):
     return config
 
 
-def write_preamble(config, outfile):
-    lines = [
-            "user: {}".format(config["hetzner_account"]),
-            "job: ns",
-            "task: upd",
-            "domain: {}".format(config["domain"]),
-            "primary: yours",
-            "zonefile: /begin"
-        ]
-
-    for line in lines:
-        outfile.write(line.encode() + b"\n")
-
-
-def write_epilog(config, outfile):
-    outfile.write(b"/end\n")
-
-
-def write_acme_challenge(config, outfile):
-    if config["acme_challenge"] is not None:
-        outfile.write("_acme-challenge 300 IN TXT \"{}\"\n".format(
-                      config["acme_challenge"]).encode())
-
-
-def get_folders_zonefiles(config):
-    """
-        Search and return folder for zonefiles. The order is:
-
-        1. $HOME/.config/hedup/zonefiles
-        2. /etc/hedup/zonefiles
-        3. ./zonefiles
-    """
-    search_order = [
-            osp.expandvars("$HOME/.config/hedup/zonefiles"),
-            "/etc/hedup/zonefiles",
-            osp.join(osp.dirname(osp.abspath(__file__)), "zonefiles"),
-        ]
-    return search_order
-
-
-def list_domains(config):
-    for folder in get_folders_zonefiles(config):
-        if not osp.isdir(folder):
-            continue
-        print("")
-        print("Available domains in folder: {}".format(folder))
-        print("")
-        for domain in os.listdir(folder):
-            print(domain)
-
-
-def escape_spaces(msg):
-    if " " in msg:
-        return "\"{}\"".format(msg)
-    else:
-        return msg
-
-
 def update_dns(config):
     with tempfile.TemporaryFile() as tmp:
         write_preamble(config, tmp)
@@ -203,14 +189,28 @@ def update_dns(config):
             mail.wait()
 
 
-def main():
-    config = read_config(parse_arguments())
-    if config["list_domains"]:
-        list_domains(config)
-    elif config["domain"] is not None:
-        update_dns(config)
-    else:
-        print("Must specify either --domain or --list-domains.")
+def write_acme_challenge(config, outfile):
+    if config["acme_challenge"] is not None:
+        outfile.write("_acme-challenge 300 IN TXT \"{}\"\n".format(
+                      config["acme_challenge"]).encode())
+
+
+def write_epilog(config, outfile):
+    outfile.write(b"/end\n")
+
+
+def write_preamble(config, outfile):
+    lines = [
+            "user: {}".format(config["hetzner_account"]),
+            "job: ns",
+            "task: upd",
+            "domain: {}".format(config["domain"]),
+            "primary: yours",
+            "zonefile: /begin"
+        ]
+
+    for line in lines:
+        outfile.write(line.encode() + b"\n")
 
 
 if __name__ == "__main__":
