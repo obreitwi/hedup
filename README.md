@@ -1,4 +1,4 @@
-# hedup: Perform HEtzner Dns UPdates via command line.
+# hedup: Perform HEtzner Dns UPdates via command line
 
 The Hetzner DNS Robot can be updated via mail. `hedup` allows you to generate
 such DNS zonefile update mails, append a Let's Encrypt-ACME challenge and sign
@@ -27,7 +27,7 @@ locations:
 
 ## Zonefiles
 
-The zonefiles are searched for at the following locations:
+The zonefiles are searched for in the following locations:
   * `${HOME}/.config/hedup/zonefiles`
   * `/etc/hedup/zonefiles`
   * `${SCRIPT}/hedup/zonefiles`

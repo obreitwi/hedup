@@ -175,20 +175,24 @@ def update_dns(config):
 
         tmp.seek(0)
 
-        gpg = Which("gpg")("-o", "-", "-u", config["gpg_sign_key"],
-                           "--clearsign",
-                           stdin=tmp, stdout=sp.PIPE)
+        gpg_prog = Which(config.get("gpg_binary", "gpg"))
+        mail_prog = Which(config.get("mail_binary", "mail"))
+
+        gpg = gpg_prog("-o", "-", "-u", config["gpg_sign_key"],
+                       "--clearsign",
+                       stdin=tmp, stdout=sp.PIPE)
 
         mail_args = ["-s", "DNS Update", "-r", config["from_address"],
                      ROBOT_ADDRESS]
 
         if config["dry_run"]:
-            print("mail {} <<EOF".format(" ".join(mail_args)))
+            print("{} {} <<EOF".format(
+                config.get("mail_binary", "mail"),
+                " ".join(mail_args)))
             print(gpg.communicate()[0].decode())
             print("EOF")
         else:
-            mailprog = Which("mail")
-            mail = mailprog(mail_args, stdin=gpg.stdout)
+            mail = mail_prog(mail_args, stdin=gpg.stdout)
             mail.wait()
 
 
