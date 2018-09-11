@@ -154,7 +154,7 @@ def parse_arguments():
                      help="Domain to update")
 
     parser.add_argument("-a", "--acme-challenge", metavar="<challenge>",
-                        help="Which ACME-challenge to set.")
+                        help="Which ACME-challenge to set.", nargs="*")
 
     parser.add_argument("-d", "--dry-run", action="store_true",
                         help="Print mail that would be send.")
@@ -214,7 +214,7 @@ def retrieve_certbot_config(config):
         config["domain"] = value
 
     with EnsureInEnv("CERTBOT_VALIDATION") as value:
-        config["acme_challenge"] = value
+        config["acme_challenge"] = [value]
 
 
 def update_dns(config):
@@ -251,9 +251,10 @@ def update_dns(config):
 
 def write_acme_challenge(config, outfile):
     if config["acme_challenge"] is not None:
-        outfile.write("_acme-challenge {} IN TXT \"{}\"\n".format(
-                      config["acme_challenge_ttl"],
-                      config["acme_challenge"]).encode())
+        for acme_challenge in config["acme_challenge"]:
+            outfile.write("_acme-challenge {:d} IN TXT \"{}\"\n".format(
+                          config["acme_challenge_ttl"],
+                          acme_challenge).encode())
 
 
 def write_epilog(config, outfile):
