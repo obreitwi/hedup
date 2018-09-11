@@ -36,7 +36,7 @@ class Which(object):
             try:
                 self.executable = sp.check_output(["which", path]).strip()
             except sp.CalledProcessError:
-                raise IOError("Could not executable: {}".format(path))
+                raise IOError("Could not find executable: {}".format(path))
         self.additional_args = list(args)
 
     def __call__(self, *args, **kwargs):
