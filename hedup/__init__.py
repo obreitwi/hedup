@@ -164,6 +164,13 @@ def list_domains(config):
             print(domain)
 
 
+def escape_spaces(msg):
+    if " " in msg:
+        return "\"{}\"".format(msg)
+    else:
+        return msg
+
+
 def update_dns(config):
     with tempfile.TemporaryFile() as tmp:
         write_preamble(config, tmp)
@@ -187,8 +194,8 @@ def update_dns(config):
 
         if config["dry_run"]:
             print("{} {} <<EOF".format(
-                config.get("mail_binary", "mail"),
-                " ".join(mail_args)))
+                mail_prog.executable.decode(),
+                " ".join(map(escape_spaces, mail_args))))
             print(gpg.communicate()[0].decode())
             print("EOF")
         else:
