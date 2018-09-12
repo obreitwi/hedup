@@ -13,7 +13,39 @@ exist beforehand!
 
 ## Usage
 ```
-  hedup --domain sample-domain.eu --acme-challenge "ThisIsMyACMEChallenge"
+usage: hedup [-h] [-D <domain>] [-a [<challenge> [<challenge> ...]]] [-d]
+             [-f <address>] [-g <key>] [--hetzner-account <account>] [-l]
+
+hedup: Perform HEtzner Dns UPdates via command line. Generate a DNS zonefile
+update mail, append Let's Encrypt-ACME challenge, sign via GPG and send it.
+The zonefiles are searched for at the following locations: *
+${HOME}/.config/hedup/zonefiles * /etc/hedup/zonefiles *
+${SCRIPT}/hedup/zonefiles If no arguments are specified -e.g., when run as ,
+hedup will try to aquire the relevant information from the environment. This
+is especially useful when run as manual-auth-hook in certbot.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -D <domain>, --domain <domain>
+                        Domain to update
+  -a [<challenge> [<challenge> ...]], --acme-challenge [<challenge> [<challenge> ...]]
+                        Which ACME-challenge to set.
+  -d, --dry-run         Print mail that would be send.
+  -f <address>, --from-address <address>
+                        Hetzner robot account.
+  -g <key>, --gpg-sign-key <key>
+                        GPG key used to sign mail.
+  --hetzner-account <account>
+                        Hetzner robot account.
+  -l, --list-domains    List all domains for which a zonefile exists.
+```
+
+## Minimal Example
+1. Copy zonefile from your Hetzner Robot Konsole for `your-domain.tld` to
+   `~/.config/hedup/zonefiles/your-domain.tld`.
+2. To update a given ACME challenge, run::
+```
+  hedup -D your-domain.tld --acme-challenge "ThisIsMyACMEChallenge"
 ```
 
 ## Config
