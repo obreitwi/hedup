@@ -34,6 +34,7 @@
 
 from __future__ import print_function
 
+from argparse import RawTextHelpFormatter
 from pkg_resources import resource_string
 
 import argparse
@@ -145,9 +146,10 @@ def main():
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser()
-
-    parser.description = globals()["__doc__"]
+    parser = argparse.ArgumentParser(
+            description=globals()["__doc__"],
+            formatter_class=RawTextHelpFormatter
+        )
 
     grp = parser.add_mutually_exclusive_group()
     grp.add_argument("-D", "--domain", metavar="<domain>",
