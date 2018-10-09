@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="hedup",
-    version="0.1.0",
+    version="0.2.0",
     author="Oliver Breitwieser",
     author_email="oliver.breitwieser@gmail.com",
     packages=find_packages(),
