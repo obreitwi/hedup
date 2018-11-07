@@ -247,7 +247,7 @@ def update_dns(config):
             print(gpg.communicate()[0].decode())
             print("EOF")
         else:
-            mail = mail_prog(mail_args, stdin=gpg.stdout)
+            mail = mail_prog(*mail_args, stdin=gpg.stdout)
             mail.wait()
 
 
