@@ -10,7 +10,9 @@ setup(
     author="Oliver Breitwieser",
     author_email="oliver.breitwieser@gmail.com",
     packages=find_packages(),
-    include_package_data=True,
+    package_data={
+        "hedup": ["heduprc.defaults"],
+    },
     scripts=[],
     url="http://github.com/obreitwi/hedup",
     description="Set ACME challenge for Hetzner DNS via mail.",
