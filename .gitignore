@@ -1,0 +1,4 @@
+build/
+dist/
+hedup.egg-info/
+*.pyc
