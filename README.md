@@ -5,13 +5,13 @@ such DNS zonefile update mails, append a Let's Encrypt-ACME challenge and sign
 it via GPG.
 
 This is especially useful for automatically updating Let's Encrypt-wildcard
-certificates.
+certificates via dns-01 challenges.
 
 **Note**: Currenty `hedup` only issues zonefile update mails, the domain has to
 exist beforehand!
 
 
-## Usage
+## Standalone Usage
 ```
 usage: hedup [-h] [-D <domain>] [-a [<challenge> [<challenge> ...]]] [-d]
              [-f <address>] [-g <key>] [--hetzner-account <account>] [-l]
