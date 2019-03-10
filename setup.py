@@ -8,7 +8,7 @@ setup(
     name="hedup",
     version="0.2.0",
     author="Oliver Breitwieser",
-    author_email="oliver.breitwieser@gmail.com",
+    author_email="oliver@breitwieser.eu",
     packages=find_packages(),
     package_data={
         "hedup": ["heduprc.defaults"],
@@ -27,7 +27,12 @@ Encrypt-wildcard certificates.
             "hedup = hedup:main",
         ]
     },
-    install_requires=["pyyaml"],
+    install_requires=[
+        "pyyaml",
+        "acme>=0.21.1",
+        "certbot>=0.21.1",
+        "zope.interface"
+    ],
     setup_requires=[],
     tests_require=[],
     extras_require={}
