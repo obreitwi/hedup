@@ -25,6 +25,9 @@ Encrypt-wildcard certificates.
     entry_points={
         "console_scripts": [
             "hedup = hedup:main",
+        ],
+        "certbot.plugins": [
+            "hedup = hedup.certbot:Authenticator"
         ]
     },
     install_requires=[
