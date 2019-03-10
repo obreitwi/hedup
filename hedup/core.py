@@ -111,7 +111,7 @@ def list_domains(config):
             print(domain)
 
 
-def read_config(args):
+def read_config(args=None):
     """
         Read config and update args
     """
@@ -130,12 +130,13 @@ def read_config(args):
         except IOError:
             pass
 
-    # update arguments with values from config
-    for key in filter(lambda s: not s.startswith("_"), dir(args)):
-        value = getattr(args, key, None)
-        # user supplied variables overwrite rcfiles
-        if value is not None or key not in config:
-            config[key] = value
+    if args is not None:
+        # update arguments with values from config
+        for key in filter(lambda s: not s.startswith("_"), dir(args)):
+            value = getattr(args, key, None)
+            # user supplied variables overwrite rcfiles
+            if value is not None or key not in config:
+                config[key] = value
 
     return config
 
