@@ -71,7 +71,7 @@ The zonefiles are searched for in the following locations:
   * `${SCRIPT}/hedup/zonefiles`
 
 ## Copyright
-Copyright (C) 2018 Oliver Breitwieser
+Copyright (C) 2018-2019 Oliver Breitwieser
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
