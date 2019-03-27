@@ -5,7 +5,8 @@ such DNS zonefile update mails, append a Let's Encrypt-ACME challenge and sign
 it via GPG.
 
 This is especially useful for automatically updating Let's Encrypt-wildcard
-certificates via dns-01 challenges.
+certificates via dns-01 challenges that are also valid for the domain itself
+(`*.sample-domain.eu` as well as `sample-domain.eu`).
 
 ## `certbot` plugin
 
