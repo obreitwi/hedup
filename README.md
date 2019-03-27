@@ -29,7 +29,7 @@ Cleaning up challenges
 Installation is straight forward via
 [`setuptools`](https://setuptools.readthedocs.io/en/latest/):
 ```
-# python setup.py install
+# python setup.py install --prefix /usr/local
 ```
 
 ## Setup: Zonefiles
