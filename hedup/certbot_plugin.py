@@ -40,7 +40,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     description = "Perform dns-01 challenge via Hetzner mail updater."
 
     @classmethod
-    def add_parser_arguments(cls, add, default_propagation_seconds=320):  # pylint: disable=arguments-differ
+    def add_parser_arguments(cls, add, default_propagation_seconds=360):  # pylint: disable=arguments-differ
         # adjust default_propagation_seconds to the recommended value
         super(Authenticator, cls).add_parser_arguments(
               add, default_propagation_seconds=default_propagation_seconds)
