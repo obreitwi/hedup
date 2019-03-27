@@ -20,7 +20,8 @@ hetzner_account: K9999999999
 mail_binary: mail
 
 # amount of seconds to wait after issueing update when run in automatic mode
-post_update_wait_secs: 300
+# make sure it's longer than the TTL of the TXT entry
+post_update_wait_secs: 330
 
 
 # vim: ft=yaml

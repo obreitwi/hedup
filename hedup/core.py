@@ -19,8 +19,10 @@
 
 from __future__ import print_function
 
+from argparse import RawTextHelpFormatter
 from pkg_resources import resource_string
 
+import argparse
 import os
 import os.path as osp
 import subprocess as sp
@@ -111,6 +113,37 @@ def list_domains(config):
             print(domain)
 
 
+def parse_arguments(args=None):
+    parser = argparse.ArgumentParser(
+            description=globals()["__doc__"],
+            formatter_class=RawTextHelpFormatter
+        )
+
+    grp = parser.add_mutually_exclusive_group()
+    grp.add_argument("-D", "--domain", metavar="<domain>",
+                     help="Domain to update")
+
+    parser.add_argument("-a", "--acme-challenge", metavar="<challenge>",
+                        help="Which ACME-challenge to set.", nargs="*")
+
+    parser.add_argument("-d", "--dry-run", action="store_true",
+                        help="Print mail that would be send.")
+
+    parser.add_argument("-f", "--from-address", metavar="<address>",
+                        help="Hetzner robot account.")
+
+    parser.add_argument("-g", "--gpg-sign-key", metavar="<key>",
+                        help="GPG key used to sign mail.")
+
+    parser.add_argument("--hetzner-account", metavar="<account>",
+                        help="Hetzner robot account.")
+
+    grp.add_argument("-l", "--list-domains", action="store_true",
+                     help="List all domains for which a zonefile exists.")
+
+    return parser.parse_args(args)
+
+
 def read_config(args=None):
     """
         Read config and update args
@@ -130,13 +163,16 @@ def read_config(args=None):
         except IOError:
             pass
 
-    if args is not None:
-        # update arguments with values from config
-        for key in filter(lambda s: not s.startswith("_"), dir(args)):
-            value = getattr(args, key, None)
-            # user supplied variables overwrite rcfiles
-            if value is not None or key not in config:
-                config[key] = value
+    if args is None:
+        # default command line arguments
+        args = parse_arguments([])
+
+    # update arguments with values from config
+    for key in filter(lambda s: not s.startswith("_"), dir(args)):
+        value = getattr(args, key, None)
+        # user supplied variables overwrite rcfiles
+        if value is not None or key not in config:
+            config[key] = value
 
     return config
 
@@ -188,7 +224,7 @@ def update_dns(config):
 
 
 def write_acme_challenge(config, outfile):
-    if config["acme_challenge"] is not None:
+    if config.get("acme_challenge", None) is not None:
         for acme_challenge in config["acme_challenge"]:
             outfile.write("_acme-challenge {:d} IN TXT \"{}\"\n".format(
                           config["acme_challenge_ttl"],

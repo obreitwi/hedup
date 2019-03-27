@@ -40,7 +40,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     description = "Perform dns-01 challenge via Hetzner mail updater."
 
     @classmethod
-    def add_parser_arguments(cls, add, default_propagation_seconds=300):  # pylint: disable=arguments-differ
+    def add_parser_arguments(cls, add, default_propagation_seconds=320):  # pylint: disable=arguments-differ
         # adjust default_propagation_seconds to the recommended value
         super(Authenticator, cls).add_parser_arguments(
               add, default_propagation_seconds=default_propagation_seconds)
@@ -52,7 +52,12 @@ class Authenticator(dns_common.DNSAuthenticator):
     def _clean_hedup_config(self):
         return copy.deepcopy(self.hedup_config)
 
-    def perform(self, achalls): # pylint: disable=missing-docstring
+    def more_info(self):  # pylint: disable=missing-docstring,no-self-use
+        return ("Updates Hetzner DNS via email. Zonefiles and gpg keys need "
+                "to be setup in advance. See "
+                "https://github.com/obreitwi/hedup for details.")
+
+    def perform(self, achalls):  # pylint: disable=missing-docstring
         self._setup_credentials()
         self._attempt_cleanup = True
 
@@ -62,27 +67,26 @@ class Authenticator(dns_common.DNSAuthenticator):
 
         for achall in achalls:
             domain = achall.domain
-            validation_domain_name = achall.validation_domain_name(domain)
             validation = achall.validation(achall.account_key)
 
-            if "domain" in config\
-                    and config["domain"] != validation_domain_name:
+            if config.get("domain", None) is not None \
+                    and config["domain"] != domain:
                 # finalize update of this domain (user should specify all
                 # updates for a given domain together)
-                hedup.upate_dns(config)
+                hedup.update_dns(config)
                 config = self._clean_hedup_config
 
-            if "domain" not in config:
-                config["domain"] = validation_domain_name
-                config["acme-challenge"] = [validation]
+            if config.get("domain", None) is None:
+                config["domain"] = domain
+                config["acme_challenge"] = [validation]
 
-            elif config["domain"] == validation_domain_name:
+            elif config.get("domain", None) == domain:
                 # still the same domain to validate
-                config["acme-challenge"].append(validation)
+                config["acme_challenge"].append(validation)
 
             responses.append(achall.response(achall.account_key))
 
-        if len(config["acme-challenge"]) > 0:
+        if len(config.get("acme_challenge", [])) > 0:
             # there are outstanding dns updates
             hedup.update_dns(config)
 
@@ -96,4 +100,6 @@ class Authenticator(dns_common.DNSAuthenticator):
         return responses
 
     def _cleanup(self, domain, validation_domain_name, validation):  # pragma: no cover
-        hedup.update_dns(self._clean_hedup_config)
+        config = self._clean_hedup_config
+        config["domain"] = domain
+        hedup.update_dns(config)

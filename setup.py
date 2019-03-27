@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="hedup",
-    version="0.2.0",
+    version="0.3.0",
     author="Oliver Breitwieser",
     author_email="oliver@breitwieser.eu",
     packages=find_packages(),
@@ -27,7 +27,7 @@ Encrypt-wildcard certificates.
             "hedup = hedup:main",
         ],
         "certbot.plugins": [
-            "hedup = hedup.certbot:Authenticator"
+            "dns = hedup.certbot_plugin:Authenticator"
         ]
     },
     install_requires=[

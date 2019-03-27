@@ -34,16 +34,14 @@
 
 from __future__ import print_function
 
-from argparse import RawTextHelpFormatter
-
 from . import core
 
-import argparse
+import sys
 import time
 
 
 def main():
-    config = core.read_config(parse_arguments())
+    config = core.read_config(core.parse_arguments(sys.argv))
     if config["list_domains"]:
         core.list_domains(config)
     elif config["domain"] is not None:
@@ -56,37 +54,6 @@ def main():
               config["post_update_wait_secs"]))
         time.sleep(config["post_update_wait_secs"])
         print("…done!")
-
-
-def parse_arguments():
-    parser = argparse.ArgumentParser(
-            description=globals()["__doc__"],
-            formatter_class=RawTextHelpFormatter
-        )
-
-    grp = parser.add_mutually_exclusive_group()
-    grp.add_argument("-D", "--domain", metavar="<domain>",
-                     help="Domain to update")
-
-    parser.add_argument("-a", "--acme-challenge", metavar="<challenge>",
-                        help="Which ACME-challenge to set.", nargs="*")
-
-    parser.add_argument("-d", "--dry-run", action="store_true",
-                        help="Print mail that would be send.")
-
-    parser.add_argument("-f", "--from-address", metavar="<address>",
-                        help="Hetzner robot account.")
-
-    parser.add_argument("-g", "--gpg-sign-key", metavar="<key>",
-                        help="GPG key used to sign mail.")
-
-    parser.add_argument("--hetzner-account", metavar="<account>",
-                        help="Hetzner robot account.")
-
-    grp.add_argument("-l", "--list-domains", action="store_true",
-                     help="List all domains for which a zonefile exists.")
-
-    return parser.parse_args()
 
 
 if __name__ == "__main__":
