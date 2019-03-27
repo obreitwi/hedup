@@ -7,11 +7,65 @@ it via GPG.
 This is especially useful for automatically updating Let's Encrypt-wildcard
 certificates via dns-01 challenges.
 
-**Note**: Currenty `hedup` only issues zonefile update mails, the domain has to
-exist beforehand!
+## `certbot` plugin
 
+`hedup` can be used as a [`certbot`](https://certbot.eff.org/) authenticator
+plugin:
+```
+# certbot certonly -d "*.sample-domain.eu" -d "sample-domain.eu" --authenticator hedup:dns
+
+Renewing an existing certificate
+Performing the following challenges:
+dns-01 challenge for sample-domain.eu
+dns-01 challenge for sample-domain.eu
+Waiting 320 seconds for DNS changes to propagate
+Waiting for verification...
+Cleaning up challenges
+```
+
+## Install
+
+Installation is straight forward via
+[`setuptools`](https://setuptools.readthedocs.io/en/latest/):
+```
+# python setup.py install
+```
+
+## Setup: Zonefiles
+
+Currenty `hedup` only issues zonefile update mails, the domain has to exist
+beforehand!
+
+Copy zonefile from your Hetzner Robot Konsole for `sample-domain.eu` to
+`~/.config/hedup/zonefiles/sample-domain.eu` or
+`/etc/hedup/zonefiles/sample-domain.eu`.
+
+## Config
+
+Please edit the included sample config file and put it in one for those
+locations:
+
+* `$HOME/.config/hedup/heduprc`
+* `$HOME/.config/heduprc`
+* `/etc/hedup/heduprc`
+
+
+## Zonefiles
+
+The zonefiles are searched for in the following locations:
+  * `${HOME}/.config/hedup/zonefiles`
+  * `/etc/hedup/zonefiles`
+  * `${SCRIPT}/hedup/zonefiles`
 
 ## Standalone Usage
+
+`hedup` can also be used without certbot. To update a given ACME challenge,
+run:
+```
+  hedup -D sample-domain.eu --acme-challenge "ThisIsMyACMEChallenge"
+```
+
+Full `hedup --help`:
 ```
 usage: hedup [-h] [-D <domain>] [-a [<challenge> [<challenge> ...]]] [-d]
              [-f <address>] [-g <key>] [--hetzner-account <account>] [-l]
@@ -45,30 +99,6 @@ optional arguments:
                         Hetzner robot account.
   -l, --list-domains    List all domains for which a zonefile exists.
 ```
-
-## Minimal Example
-1. Copy zonefile from your Hetzner Robot Konsole for `your-domain.tld` to
-   `~/.config/hedup/zonefiles/your-domain.tld`.
-2. To update a given ACME challenge, run::
-```
-  hedup -D your-domain.tld --acme-challenge "ThisIsMyACMEChallenge"
-```
-
-## Config
-Please edit the included sample config file and put it in one for those
-locations:
-
-* `$HOME/.config/hedup/heduprc`
-* `$HOME/.config/heduprc`
-* `/etc/hedup/heduprc`
-
-
-## Zonefiles
-
-The zonefiles are searched for in the following locations:
-  * `${HOME}/.config/hedup/zonefiles`
-  * `/etc/hedup/zonefiles`
-  * `${SCRIPT}/hedup/zonefiles`
 
 ## Copyright
 Copyright (C) 2018-2019 Oliver Breitwieser
