@@ -32,7 +32,7 @@ Installation is straight forward via
 # python setup.py install --prefix /usr/local
 ```
 
-## Setup: Zonefiles
+## Zonefiles
 
 Currenty `hedup` only issues zonefile update mails, the domain has to exist
 beforehand!
@@ -40,6 +40,11 @@ beforehand!
 Copy zonefile from your Hetzner Robot Konsole for `sample-domain.eu` to
 `~/.config/hedup/zonefiles/sample-domain.eu` or
 `/etc/hedup/zonefiles/sample-domain.eu`.
+
+The zonefiles are searched for in the following locations:
+  * `${HOME}/.config/hedup/zonefiles`
+  * `/etc/hedup/zonefiles`
+  * `${SCRIPT}/hedup/zonefiles`
 
 ## Config
 
@@ -50,13 +55,12 @@ locations:
 * `$HOME/.config/heduprc`
 * `/etc/hedup/heduprc`
 
+## GPG keys
 
-## Zonefiles
-
-The zonefiles are searched for in the following locations:
-  * `${HOME}/.config/hedup/zonefiles`
-  * `/etc/hedup/zonefiles`
-  * `${SCRIPT}/hedup/zonefiles`
+You have to make sure that the GPG key specified in your `heduprc` is 
+accessible via `gpg`. Especially in the case of running `hedup` as `certbot`
+plugin, one common pitfall is that the user running certbot (e.g., root) does
+not have access to the GPG key.
 
 ## Standalone Usage
 
@@ -67,7 +71,7 @@ run:
 ```
 
 Full `hedup --help`:
-```
+```cp /usr/share/doc/util-linux/examples/fstrim.{service,timer} /etc/systemd/system
 usage: hedup [-h] [-D <domain>] [-a [<challenge> [<challenge> ...]]] [-d]
              [-f <address>] [-g <key>] [--hetzner-account <account>] [-l]
 
