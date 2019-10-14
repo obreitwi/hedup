@@ -48,7 +48,7 @@ The zonefiles are searched for in the following locations:
 
 ## Config
 
-Please edit the included sample config file and put it in one for those
+Please edit the included sample config file and put it in one of these
 locations:
 
 * `$HOME/.config/hedup/heduprc`
