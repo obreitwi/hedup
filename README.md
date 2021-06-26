@@ -1,8 +1,8 @@
 # hedup: Perform HEtzner Dns UPdates via command line
 
-**UPDATE** Updating DNS entries via mail has been deprecated and replaced with 
+***DEPRECATED** Updating DNS entries via mail has been deprecated and replaced with 
 a proper API, making `hedup` obsolete. For `certbot`-plugin functionality, please
-refer to newer implementations like [certbot-dns-hetzner](https://github.com/ctrlaltcoop/certbot-dns-hetzner).
+refer to newer implementations like [certbot-dns-hetzner](https://github.com/ctrlaltcoop/certbot-dns-hetzner).*
 
 The Hetzner DNS Robot can be updated via mail. `hedup` allows you to generate
 such DNS zonefile update mails, append a Let's Encrypt-ACME challenge and sign
